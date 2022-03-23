@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en-EN">
+    <head>
+        <title>Linia</title>
+        <script src="myplotlib.js"></script>
+        <style>
+            html {
+                width: 100%;
+                height: 100%;
+            }
+            canvas {
+                border: 1px solid black;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="myCanvas" width="600" height="600"></canvas>
+        <script>
+            const plotter = new XYPlotter("myCanvas");
+            plotter.transformXY();
+
+            const xMax = plotter.xMax;
+            const yMax = plotter.yMax;
+            const xMin = plotter.xMin;
+            const yMin = plotter.yMin;
+
+            const numPoints = 400;
+            const xPoints = [];
+            const yPoints = [];
+            for(let i = 0; i < numPoints; i++){
+                xPoints[i] = Math.random() * xMax;
+                yPoints[i] = Math.random() * yMax;
+            }
+            function f(x){
+                return x * 1.2 + 50;
+            }
+            
+            const desired = [];
+            for(let i = 0; i < numPoints; i++){
+                desired[i] = 0;
+                if(yPoints[i] > f(xPoints[i])) {desired[i] = 1;}
+            }
+            for(let i = 0; i < numPoints; i++){
+                let color = "blue";
+                if(desired[i]) {color = "green";}
+                plotter.plotPoint(xPoints[i], yPoints[i], color);
+            }
+
+            plotter.plotLine(xMin, f(xMin), xMax, f(xMax), "black");
+            // plotter.plotPoints(numPoints, xPoints, yPoints, "blue");
+        </script>
+    </body>
+</html>

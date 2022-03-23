@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en-EN">
+    <head>
+        <title>Trening</title>
+        <script src="myplotlib.js"></script>
+        <script src="myperceptron.js"></script>
+        <style>
+            html {
+                width: 100%;
+                height: 100%;
+            }
+            canvas {
+                border: 1px solid black;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="myCanvas" width="600" height="600"></canvas>
+        <script>
+            const numPoints = 400;
+            const learningRate = 0.00001;
+
+            const plotter = new XYPlotter("myCanvas");
+            plotter.transformXY();
+
+            const xMax = plotter.xMax;
+            const yMax = plotter.yMax;
+            const xMin = plotter.xMin;
+            const yMin = plotter.yMin;
+
+            const xPoints = [];
+            const yPoints = [];
+            for(let i = 0; i < numPoints; i++){
+                xPoints[i] = Math.random() * xMax;
+                yPoints[i] = Math.random() * yMax;
+            }
+            function f(x){
+                return x * 1.2 + 50;
+            }
+            
+            const desired = [];
+            for(let i = 0; i < numPoints; i++){ 
+                desired[i] = 0;
+                if(yPoints[i] > f(xPoints[i])) {desired[i] = 1;}
+            }
+            // for(let i = 0; i < numPoints; i++){
+            //     let color = "blue";
+            //     if(desired[i]) {color = "green";}
+            //     plotter.plotPoint(xPoints[i], yPoints[i], color);
+            // }
+            plotter.plotLine(xMin, f(xMin), xMax, f(xMax), "black");
+        
+            //training
+            const ptron = new Perceptron(2, learningRate);
+            for(let j = 0; j <= 10000; j++){
+                for(let i = 0; i < numPoints; i++){
+                    ptron.train([xPoints[i], yPoints[i]], desired[i]);
+                }
+            }
+
+            for(let i = 0; i < numPoints; i++){
+                const x = xPoints[i];
+                const y = yPoints[i];
+                let guess = ptron.activate([x, y, ptron.bias]);
+                let color = "blue";
+                if(guess == 0) color = "green";
+                plotter.plotPoint(x, y, color);
+            }
+            
+            //testing
+            const counter = 500;
+            let errors = 0;
+            for(let i = 0; i < counter; i++){
+                let x = Math.random() * xMax;
+                let y = Math.random() * yMax;
+                let guess = ptron.activate([x, y, ptron.bias]);
+                let color = "black";
+                if(guess == 0) color = "blue";
+                plotter. plotPoint(x, y, color);
+                if(y > f(x) && guess == 0) errors++;
+            }
+        </script>
+    </body>
+</html>
